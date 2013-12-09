@@ -8,6 +8,13 @@ function endsWith(str, suffix) {
     else return false;
 }
 
+function bytesToMB(bytes){
+    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes == 0) return '0 Bytes';
+    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
+
 Printer.prototype.print = function(hits, episodeNumber) {
     //Filter out for episode number if provided
     var episodeHits;
@@ -26,9 +33,9 @@ Printer.prototype.print = function(hits, episodeNumber) {
     });
 
     var bytesPerEpisode = _.mapValues(grouped, function(episodeHits){
-        return _.reduce(episodeHits, function(sum, b) {
+        return bytesToMB(_.reduce(episodeHits, function(sum, b) {
             return sum+b.bytes;
-        },0);
+        },0));
     });
     console.log("BYTES PER EPISODE");
     console.log(bytesPerEpisode);
