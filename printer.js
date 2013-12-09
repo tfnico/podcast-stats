@@ -12,11 +12,13 @@ Printer.prototype.print = function(hits, episodeNumber) {
     //Filter out for episode number if provided
     var episodeHits;
     if(episodeNumber){
-       episodeHits = _.filter(hits, function(line){
-        return endsWith(line.url, episodeNumber+".mp3");
-       });
+        episodeHits = _.filter(hits, function(line){
+            return endsWith(line.url, episodeNumber+".mp3");
+        });
     } else {
-       episodeHits = hits;
+        episodeHits = _.filter(hits, function(line){
+            return endsWith(line.url, ".mp3");
+        });
     }
 
     var grouped = _.groupBy(episodeHits, function(line){
