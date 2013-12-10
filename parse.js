@@ -1,4 +1,7 @@
+var _ = require('lodash-node');
+var async = require('async');
 var fs = require('fs');
+var zlib = require('zlib');
 var Parser = require('./parser');
 var Printer = require('./printer');
 
@@ -6,23 +9,44 @@ var Printer = require('./printer');
 var node = process.argv[0];// node
 var dir = process.argv[1];
 var episodeNumber = process.argv[2];
+var logDir = './nginx/';
 
+//Services
 var parser = new Parser();
 var printer = new Printer();
 
+function endsWith(str, suffix) {
+    if(str) return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    else return false;
+}
 
-// Read the contents of the file into memory.
-fs.readFile('nginx/access.log', function (err, logData) {
+var readHitsFromFile = function(fileName, callback){
+    var filePath = logDir+fileName;
+    console.log("Reading file " + filePath);
+    if(endsWith(fileName, 'gz')){
+        fs.readFile(filePath, (function(callback){
+            return function(err, buffer){
+                if(!err){
+                    zlib.unzip(buffer, callback);
+                } else throw err;
+            };
+        })(callback));
+    } else {
+        fs.readFile(filePath, callback);
+    }
+};
 
-    // If an error occurred, throwing it will
-    // display the exception and end our app.
-    if (err) throw err;
+var sendResultsToPrinter = function (err, results) {
+    console.log("Sending results to printer");
+    if (!err){
+        var hits = _.reduce(results, function(hits,data){
+            return hits.concat(parser.parse(data.toString()));
+        },[]);
+        printer.print(hits, episodeNumber);
+    } else throw err;
+};
 
-    // logData is a Buffer, convert to string.
-    var text = logData.toString();
-
-    var hits = parser.parse(text);
-
-    printer.print(hits, episodeNumber);
-});
+//Read all the files and print results!
+var fileNames = fs.readdirSync(logDir);
+async.map(fileNames, readHitsFromFile, sendResultsToPrinter);
 

@@ -37,7 +37,7 @@ Printer.prototype.print = function(hits, episodeNumber) {
             return sum+b.bytes;
         },0));
     });
-    console.log("BYTES PER EPISODE");
+    console.log("TRAFFIC PER EPISODE");
     console.log(bytesPerEpisode);
 }
 
