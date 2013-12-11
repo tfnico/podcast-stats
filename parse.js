@@ -24,13 +24,11 @@ var readHitsFromFile = function(fileName, callback){
     var filePath = logDir+fileName;
     console.log("Reading file " + filePath);
     if(endsWith(fileName, 'gz')){
-        fs.readFile(filePath, (function(callback){
-            return function(err, buffer){
-                if(!err){
-                    zlib.unzip(buffer, callback);
-                } else throw err;
-            };
-        })(callback));
+        fs.readFile(filePath, function(err, buffer){
+            if(!err){
+                zlib.unzip(buffer, callback);
+            } else throw err;
+        });
     } else {
         fs.readFile(filePath, callback);
     }
