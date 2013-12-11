@@ -39,6 +39,25 @@ Printer.prototype.print = function(hits, episodeNumber) {
     });
     console.log("TRAFFIC PER EPISODE");
     console.log(bytesPerEpisode);
+
+    var bytesSum = _.reduce(episodeHits, function(sum, episode){
+        return sum+episode.bytes;
+    },0);
+    console.log("TOTAL TRAFFIC");
+    console.log(bytesToMB(bytesSum));
+
+    var earliestHit = _.min(episodeHits, 'date');
+    var latestHit = _.max(episodeHits, 'date');
+
+    console.log("EARLIEST DATE");
+    console.log(earliestHit.date.toString());
+
+    console.log("LATEST DATE");
+    console.log(latestHit.date.toString());
+
+    console.log("THAT WAS A PERIOD OF");
+    console.log(earliestHit.date.from(latestHit.date, true));
+
 }
 
 module.exports = Printer;
