@@ -1,4 +1,5 @@
 var _ = require('lodash-node');
+var moment = require('moment');
 
 var Printer = function() {
 };
@@ -40,9 +41,11 @@ Printer.prototype.print = function(hits, episodeNumber) {
     console.log("TRAFFIC PER EPISODE");
     console.log(bytesPerEpisode);
 
-    var bytesSum = _.reduce(episodeHits, function(sum, episode){
+    var sumBytes = function(sum, episode){
         return sum+episode.bytes;
-    },0);
+    };
+
+    var bytesSum = _.reduce(episodeHits, sumBytes, 0);
     console.log("TOTAL TRAFFIC");
     console.log(bytesToMB(bytesSum));
 
@@ -51,6 +54,24 @@ Printer.prototype.print = function(hits, episodeNumber) {
 
     console.log("EARLIEST DATE");
     console.log(earliestHit.date.toString());
+
+    var launchDate = earliestHit.date;
+
+    var bytesBetweenDates = function(startDate, endDate, episodeHits){
+        var hitsWithinRange = _.filter(episodeHits, function(hit){
+            return hit.date.isAfter(startDate) && hit.date.isBefore(endDate);
+        });
+        return _.reduce(hitsWithinRange,sumBytes,0);
+    }
+    var oneWeekAfterLaunchDate = moment(launchDate).add('weeks',1);
+    var firstWeekBytes = bytesBetweenDates(launchDate, oneWeekAfterLaunchDate, episodeHits);
+    console.log("BYTES AFTER ONE WEEK");
+    console.log(bytesToMB(firstWeekBytes));
+
+    var oneMonthAfterLaunchDate = moment(launchDate).add('months',1);
+    var firstMonthBytes = bytesBetweenDates(launchDate, oneMonthAfterLaunchDate, episodeHits);
+    console.log("BYTES AFTER ONE MONTH");
+    console.log(bytesToMB(firstMonthBytes));
 
     console.log("LATEST DATE");
     console.log(latestHit.date.toString());
