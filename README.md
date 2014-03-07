@@ -10,5 +10,5 @@ Build
 
 Run it
 ------
->node parse.js [url-suffix to filter]
+>node src/parse.js [url-suffix to filter]
 
