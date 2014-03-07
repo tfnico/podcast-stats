@@ -12,3 +12,8 @@ Run it
 ------
 >node src/parse.js [url-suffix to filter]
 
+Run tests
+---------
+>npm install -g mocha
+>mocha
+
