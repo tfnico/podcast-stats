@@ -9,7 +9,7 @@ var Printer = require('./printer');
 var node = process.argv[0];// node
 var dir = process.argv[1];
 var episodeNumber = process.argv[2];
-var logDir = './nginx/';
+var logDir = './logs/nginx/';
 
 //Services
 var parser = new Parser();
